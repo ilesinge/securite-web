@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>reveal.js</title>
+    <title>Sécurité Web</title>
 
     <link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/blood.css" id="theme">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
 
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
@@ -24,7 +24,318 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <section>Slide 1</section>
+        
+        <section>
+          <h1>Sécurité Web</h1>
+          <h4><i>don't get pwnd!</i></h4>
+          <img src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" class="fragment roll-in" />
+          <p>
+            <small>Par Alexandre Gravel-Raymond</small>
+          </p>
+        </section>
+        
+        <section id="owasp">
+          <h2>OWASP Top Ten Project</h2>
+          <p>
+            Open Web Application Security Project (OWASP) est une communauté publique permettant à des organismes de développer, acheter et maintenir des applications fiables.
+          </p>
+          <p>
+            L’objectif principal du Top 10 de l’OWASP est de sensibiliser les développeurs, concepteurs, architectes, décideurs, et les entreprises aux conséquences des faiblesses les plus importantes inhérentes à la sécurité des applications web.
+          </p>
+        </section>
+                
+        <section id="owasp_t10">
+          <h2>OWASP Top Ten Project</h2>
+          <ol>
+            <li>Injection</li>
+            <li>Violation de gestion d’authentification et de session</li>
+            <li>Cross-Site Scripting (XSS)</li>
+            <li>Références directes non sécurisées à un objet</li>
+            <li>Mauvaise configuration sécurité</li>
+            <li>Exposition de données sensibles</li>
+            <li>Manque de contrôle d’accès au niveau fonctionnel</li>
+            <li>Cross-Site Request Forgery (CSRF)</li>
+            <li>Utilisation de composants avec des vulnérabilités connues</li>
+            <li>Redirection et renvois non validés</li>
+          </ol>
+        </section>
+
+        <!-- Example of nested vertical slides -->
+        <section>
+          <section id="injection">
+            <h2>1. Injection</h2>
+            <blockquote>
+              « Une faille d'injection, telle l'injection SQL, OS et LDAP, se produit quand une donnée non fiable est envoyée à un interpréteur en tant qu'élément d'une commande ou d'une requête. »
+            </blockquote>
+            <div class="fragment roll-in">
+              <img class="image" src="img/injection.png" /><br/>
+              <small>Source: http://xkcd.com/327/</small>
+            </div>
+          </section>
+          
+          <section>
+            <h2>Injection SQL</h2>
+            <p>Cas typique d'injection SQL :</p>
+              <pre>Code : <code class="php">$sql = "SELECT * FROM users
+    WHERE login = '".$_GET['login']."' AND password = '".$_GET['password']."'";
+$user = mysqli_query($sql);</code></pre>
+              <pre>Requête :<code class="http">GET /login.php?login=unicorn&password='+OR+'1'='1 HTTP/1.1</code></pre>
+              <pre>Résultat :<code class="sql">SELECT * FROM users
+    WHERE login = 'unicorn' AND password = '' OR '1'='1'</code></pre>
+          </section>
+                    
+          <section>
+            <h2>Comment se protéger ?</h2>
+            <ol>
+              <li>
+                Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, base de données, etc).
+              </li>
+              <li>
+                Ne jamais faire confiance aux données provenant d'une source tiers.
+              </li>
+              <li>
+                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans une requête ou une commande. Exemples :
+                <ul>
+                  <li><pre>MySQLi :<code class="php">$login = mysqli_real_escape_string($_GET['login']);</code></pre></li>
+                  <li><pre>PDO :<code class="php">$login = $connection-&gt;quote($_GET['login']);</code></pre></li>
+                </ul>
+              </li>
+              <li>
+                Utiliser des requêtes préparées ou des procédures stockées.
+              </li>
+              <li>Ne pas réinventer la roue : <pre><code class="php" style="text-decoration:line-through">$login = str_replace("'", "\\'", $_GET['login']);</code></pre></li>
+            </ol>
+          </section>
+                    
+          <section>
+            <h2>Attention !</h2>
+            
+            <p>De telles injections sont théoriquement possibles à chaque moment où l'application interagit avec un système tiers</p>
+            
+            <ul>
+              <li>Commandes systèmes de l'OS</li>
+              <li>Envoi de mails</li>
+              <li>Appel à un webservice</li>
+              <li>Etc.</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section id="identite">
+            <h2>2. Violation de gestion d’authentification et de session</h2>
+            <blockquote>
+                « Les fonctions applicatives relatives à l'authentification et la gestion de session ne sont souvent pas mises en œuvre correctement, permettant aux attaquants de [...] s'approprier les identités d'autres utilisateurs. »
+            </blockquote>
+            <p><img src="img/password.jpg" class="fragment roll-in"/></p>
+          </section>
+          <section>
+            <h2>Exemples de vulnérabilité</h2>
+            <ul>
+              <li>Les mots de passe sont stockés ou envoyés en clair (le chiffrement MD5 est insuffisant)</li>
+              <li>Timeout de session trop long (prendre en compte les utilisations sur des postes publics)</li>
+              <li>Exposition (ex: dans l'URL) ou vulnérabilité des IDs de session</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section id="xss">
+            <h2>3. Cross-Site Scripting (XSS)</h2>
+            <blockquote>
+              « Les failles XSS se produisent chaque fois qu'une application accepte des données non fiables et les envoie à un navigateur web sans validation appropriée. XSS permet à des attaquants d'exécuter du script dans le navigateur de la victime afin de détourner des sessions utilisateur, défigurer des sites web, ou rediriger l'utilisateur vers des sites malveillants. »
+            </blockquote>
+            <p><img src="img/xss.png" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Exemple de faille XSS</h2>
+            <pre>Code :<code class="html"><form action="search.php">
+<input type="text" name="search" value="<?php echo $_GET['search']; ?>" />
+</form></code></pre>
+            <pre>Requête :<code class="http">GET /index.php?search=&quot;/&gt;&lt;script&gt;alert('Vive+le+Québec+Libre+!');&lt;/script&gt; HTTP/1.1</code></pre>
+            <pre>Rendu :<code class="html"><form action="search.php">
+<input type="text" name="search" value="&quot;/&gt;&lt;script&gt;alert('Vive le Québec Libre !');&lt;/script&gt;" />
+</form></code></pre>
+            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
+          </section>
+          
+          <section>
+            <h2>Comment s'en prémunir</h2>
+            <ol>
+              <li>
+                Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, <u>base de données</u>, etc).
+              </li>
+              <li>
+                Ne jamais faire confiance aux données provenant d'une source tiers.
+              </li>
+              <li>
+                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans dans une page HTML. Exemples :
+                <ul>
+                  <li><pre>PHP :<code class="html"><input value="<?php echo htmlentities($_GET['search']); ?>"/></code></pre></li>
+                  <li><pre>Smarty :<code class="html"><input value="{$search|escape}"/></code></pre></li>
+                </ul>
+              </li>
+              <li>Ne pas réinventer la roue : <pre><code class="php" style="text-decoration:line-through">$search = str_replace('"', '\\"', $_GET['search']);</code></pre></li>
+              <li>Toujours déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
+            </ol>
+          </section>
+          
+          <section>
+            <h2>Attention !</h2>
+            
+            <p>Il faut toujours prendre en compte le contexte dans lequel la chaîne sera affichée.</p>
+            <ul>
+              <li>Dans du code JavaScript / JSON : <code>json_encode()</code></li>
+              <li>Dans du code CSS</li>
+              <li>Dans un URL : <code>url_encode()</code></li>
+              <li>Dans un commentaire HTML</li>
+            </ul>
+            <pre>Bâton de sourcier :<code class="html">';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//&quot;;
+alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83))//--
+&gt;&lt;/SCRIPT&gt;&quot;&gt;'&gt;&lt;SCRIPT&gt;alert(String.fromCharCode(88,83,83))&lt;/SCRIPT&gt;</code></pre>
+            <p>Des attaques complexes sont possibles. Pratiquez-vous avec un Cheat Sheet : <a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet">https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet</a></p>
+          </section>
+        </section>
+
+        <section>
+          <section id="references">
+            <h2>4. Références directes non sécurisées à un objet</h2>
+            <blockquote>
+                « Une référence directe à un objet se produit quand un développeur expose une référence à un objet d'exécution interne, tel un fichier, un dossier, un enregistrement de base de données ou une clé de base de données. »
+            </blockquote>
+            <p><img src="img/data.png" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Exemple d'attaque</h2>
+            <pre>URL de téléchargement :<code class="url">http://www.example.net/download_invoice.php?id=665</code></pre>
+            
+            <p>Humm...</p>
+            <p><img src="img/access.png" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Solutions</h2>
+            <ol>
+              <li>Implémenter des références indirecte aux objets auxquels l'utilisateur a réellement accès.
+                <pre>Télécharger ma 6e facture :<code class="url">http://www.example.net/download_invoice.php?n=6</code></pre>
+              </li>
+              <li>
+                Vérifier les droits à <strong>chaque</strong> tentative d'accès à une ressource protégée.
+              </li>
+            </ol>
+          </section>
+        </section>
+
+        <section id="configuration">
+          <h2>5. Mauvaise configuration sécurité</h2>
+          <blockquote>« Une bonne sécurité nécessite de disposer d'une configuration sécurisée définie et déployée pour l'application, contextes, serveur d'application, serveur web, serveur de base de données et la plate-forme. »</blockquote>
+          <p><img src="img/display_errors.png" class="fragment roll-in"/></p>
+        </section>
+                
+        <section>
+          <section id="exposition">
+            <h2>6. Exposition de données sensibles</h2>
+            <blockquote>« Beaucoup d'applications web ne protègent pas correctement les données sensibles telles que les cartes de crédit, identifiants d'impôt et informations d'authentification. Les pirates peuvent voler ou modifier ces données faiblement protégées pour effectuer un vol d'identité, de la fraude à la carte de crédit ou autres crimes. »</blockquote>
+            <p><img src="img/sensitive.png" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Défenses possible</h2>
+            <ol>
+              <li>Chiffrer les données sensibles (avec un algorithme approprié) lors du <strong>stockage</strong> et du <strong>transport</strong> (SSL) des données</li>
+              <li>Stocker le moins possible de données sensibles</li>
+            </ol>
+          </section>
+        </section>
+        
+        <section id="controle">
+          <h2>7. Manque de contrôle d’accès au niveau fonctionnel</h2>
+          <blockquote>« Pratiquement toutes les applications web vérifient les droits d'accès au niveau fonctionnel avant de rendre cette fonctionnalité visible dans l'interface utilisateur. Cependant, les applications doivent effectuer les mêmes vérifications de contrôle d'accès sur le serveur lors de l'accès à chaque fonction. »</blockquote>
+          <p><img src="img/denied.png" class="fragment roll-in"/></p>
+        </section>
+        
+        <section>
+          <section id="csrf">
+            <h2>8. Cross-Site Request Forgery (CSRF)</h2>
+            <blockquote>« Une attaque CSRF (Cross Site Request Forgery) force le navigateur d'une victime authentifiée à envoyer une requête HTTP forgée, comprenant le cookie de session de la victime ainsi que toute autre information automatiquement inclue, à une application web vulnérable.
+»</blockquote>
+            <p><img src="img/csrf.png" class="fragment roll-in"/></p>
+          </section>
+            
+          <section>
+            <h2>Exemple d'attaque</h2>
+            <pre>URL d'envoi d'email massif :<code class="url">http://www.example.net/admin/massive_send.php?title=Code+Promo&body=Bonjour+PRENOM,[...]</code></pre>
+            <pre>Dans une page non-liée, hébergée par le pirate :<code class="html"><img src="http://www.example.net/admin/massive_send.php?title=Buy+Viagra&body=MWAHAHA"/></code></pre>
+            <p><strong>Effet</strong> : Un utilisateur, ayant des droits suffisants, accédant par inadvertance à cette page verra l'action malicieuse déclenchée en son nom sur le site web vulnérable.</p>
+            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
+          </section>
+          
+          <section>
+            <h2>Défenses possibles</h2>
+            <ol>
+              <li>Utiliser un token d'utilisation unique dans un champ caché des formulaires (Anti-CSRF token)</li>
+              <li>Demander à l'utilisateur de confirmer son action (saisir son mot de passe, CAPTCHA, etc.)</li>
+            </ol>
+            <br/><br/>
+            <p><strong>Attention :</strong></p>
+            <ul>
+              <li>Il est nécessaire, mais non suffisant, d'utiliser une méthode HTTP appropriée (POST et non GET) pour les actions sensibles</li>
+              <li>Cette attaque est fréquemment combinée à une attaque XSS du même site ou d'un site tiers</li>
+              <li>La vérification de l'entête HTTP Referer n'est pas suffisante</li>
+              <li>Attention également au Click-Jacking ! (utiliser X-Frame-Options)</li>
+            </ul>
+          </section>
+        </section>
+        
+        <section>
+          <h2>9. Utilisation de composants avec des vulnérabilités connues</h2>
+          <blockquote>« Les composants vulnérables, tels que bibliothèques, contextes et autres modules logiciels fonctionnent presque toujours avec des privilèges maximum. Ainsi, si exploités, ils peuvent causer des pertes de données sérieuses ou une prise de contrôle du serveur. »</blockquote>
+          <p><img src="img/sysadmin.png" class="fragment roll-in"/></p>
+        </section>
+        
+        <section>
+          <section id="redirection">
+            <h2>10. Redirections et renvois non validés</h2>
+            <blockquote>« Les applications web redirigent fréquemment les utilisateurs vers d'autres pages et sites internet, et utilisent des données non fiables pour déterminer les pages de destination. Sans validation appropriée, les attaquants peuvent réorienter les victimes vers des sites de phishing ou de malware. »</blockquote>
+            <p><img src="img/redirect.jpg" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Exemple d'attaque</h2>
+            <pre>Code de redirection :<code class="php">header('Location: '.$_GET['url']);</code></pre>
+            <pre>URL envoyé à un utilisateur innocent :<code class="url">http://www.example.com/redirect.php?url=http://www.example-phishing.com</code></pre>
+            <p><strong>Effet</strong> : L'image de marque du site (son URL) est détournée afin de gagner la confiance de l'utilisateur.</p>
+            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
+          </section>
+          
+          <section>
+            <h2>Comment bloquer l'attaque</h2>
+            <ol>
+              <li>Ne pas inclure l'URL de redirection dans les paramètres GET ou POST</li>
+              <li>Préférer une valeur abstraite (<code>url=24</code>) qui ne pourra pas être détournée</li>
+              <li>Si c'est nécessaire de le faire, toujours vérifier la validité de l'URL avant de l'envoyer à l'utilisateur</li>
+            </ol>
+          </section>
+        </section>
+
+        <section id="bonus">
+          <h2>En bonus</h2>
+          <ul>
+            <li>Ne jamais se baser uniquement sur la <em>sécurité par l'obscurité</em></li>
+            <li>Faire auditer son code / son application par un pair</li>
+            <li>Garder à l'esprit que ce n'est pas toujours le code qui est en cause</li>
+            <li><strong>Hackez !</strong></li>
+          </ul>
+        </section>
+                
+        <section>
+          <h1>THE END</h1>
+          <h3>Par Alexandre Gravel-Raymond</h3>
+          <p><img src="img/unicorn.jpg" class="fragment roll-in"/></p>
+        </section>
+        
         <section>Slide 2</section>
       </div>
     </div>
