@@ -1,0 +1,24 @@
+Quelques outils:
+-       Burp (scan, proxy d'analyse / attaque, etc.): https://portswigger.net/burp/
+-       ZAP (proxy d'analyse / attaque) https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project
+-       Subgraph Vega (scan, proxy, attaque) https://subgraph.com/vega/
+-       Skipfish, scanner https://code.google.com/archive/p/skipfish/
+-       Wapiti, scanner : http://wapiti.sourceforge.net/
+-       Nikto2, scanner https://cirt.net/nikto2
+-       Analyse de configuration SSL https://observatory.mozilla.org/
+-       Analyse de configuration HTTP https://httpsecurityreport.com/
+-       Test d'injections SQL http://sqlmap.org/
+-       Distribution Linux dédiée au test de sécurité https://www.kali.org/
+
+Documentation / ressources
+-       XSS Filter Evasion Cheat Sheet https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
+-       Les "25 erreurs de programmation les plus dangeureuses" http://cwe.mitre.org/top25/
+-       OWASP Top 10 https://www.owasp.org/index.php/Top_10_2013-Top_10
+-       SQL Injection Cheat Sheet : https://www.netsparker.com/blog/web-security/sql-injection-cheat-sheet/
+
+Applications vulnérables pour s'entraîner:
+-       Google Gruyère http://google-gruyere.appspot.com/
+-       XSS Game https://xss-game.appspot.com/
+-       Multillidae https://sourceforge.net/projects/mutillidae/
+-       Damn Vulnerable Web Application http://www.dvwa.co.uk/
+-       Vicnum https://sourceforge.net/projects/vicnum/
