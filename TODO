@@ -1,14 +1,48 @@
+http://suhosin.org/stories/index.html
+modSecurity
+clickjacking
+anectode XSS MySpace
+
+
+There are dozens of measures we can take in order to prevent and minimize security issues, both in the server and in the project’s code:
+
+    Disable PHP modules that are not in use.
+    Restrict information leakage (don’t display PHP errors or extra information like PHP version)
+    Turn off remote execution (allow_url_fopen and allow_url_include should be Off)
+    Control the size of POST requests and uploaded files.
+    Control the maximum time and memory PHP can take to minimize DoS attacks.
+    Disable dangerous functions such as eval() or exec() if they are not going to be used.
+    Disable session IDs in URLs to prevent session fixation.
+    Include a token in your forms to avoid CSRF.
+    Properly escape the output to avoid XSS.
+    …
+
+Recommended article: “Linux: 25 PHP Security Best Practices For Sys Admins”
+
+http://sectools.org/ / http://sectools.org/tag/web-scanners/
+https://security.sensiolabs.org/
+https://github.com/sensiolabs/security-checker
+
+
+Délégation de confiance (service tiers, type logging SaaS etc.)
+
+
 Quelques outils:
 -       Burp (scan, proxy d'analyse / attaque, etc.): https://portswigger.net/burp/
 -       ZAP (proxy d'analyse / attaque) https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project
 -       Subgraph Vega (scan, proxy, attaque) https://subgraph.com/vega/
 -       Skipfish, scanner https://code.google.com/archive/p/skipfish/
 -       Wapiti, scanner : http://wapiti.sourceforge.net/
--       Nikto2, scanner https://cirt.net/nikto2
+-       Nikto2, scanner : https://cirt.net/nikto2
++       W3af, scanner : http://w3af.org/
 -       Analyse de configuration SSL https://observatory.mozilla.org/
 -       Analyse de configuration HTTP https://httpsecurityreport.com/
 -       Test d'injections SQL http://sqlmap.org/
 -       Distribution Linux dédiée au test de sécurité https://www.kali.org/
+-       BeEf http://beefproject.com/
+-       Grabber http://rgaucher.info/beta/grabber/
+
+http://resources.infosecinstitute.com/14-popular-web-application-vulnerability-scanners/
 
 Documentation / ressources
 -       XSS Filter Evasion Cheat Sheet https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
