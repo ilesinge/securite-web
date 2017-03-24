@@ -30,61 +30,70 @@
         
         <section>
           <h1>Sécurité Web</h1>
-          <h4><i>don't get pwnd!</i></h4>
           <img src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" class="fragment roll-in" />
           <p>
             <small>Par Alexandre Gravel-Raymond</small>
           </p>
         </section>
         
-        <section id="owasp">
-          <h2>OWASP Top Ten Project</h2>
-          <p>
-            Open Web Application Security Project (OWASP) est une communauté publique permettant à des organismes de développer, acheter et maintenir des applications fiables.
-          </p>
-          <p>
-            L’objectif principal du Top 10 de l’OWASP est de sensibiliser les développeurs, concepteurs, architectes, décideurs, et les entreprises aux conséquences des faiblesses les plus importantes inhérentes à la sécurité des applications web.
-          </p>
+        <section id="pourquoi">
+          <h2>Pourquoi ?</h2>
+          <ul>
+            <li>
+              Sécurité des utilisateurs
+            </li>
+            <li>
+              Confidentialité des données
+            </li>
+            <li>
+              Intégrité des données
+            </li>
+            <li>
+              Image de l'organisation
+            </li>
+          </ul>
         </section>
-                
-        <section id="owasp_t10">
-          <h2>OWASP Top Ten Project</h2>
-          <ol>
-            <li>Injection</li>
-            <li>Violation de gestion d’authentification et de session</li>
-            <li>Cross-Site Scripting (XSS)</li>
-            <li>Références directes non sécurisées à un objet</li>
-            <li>Mauvaise configuration sécurité</li>
-            <li>Exposition de données sensibles</li>
-            <li>Manque de contrôle d’accès au niveau fonctionnel</li>
-            <li>Cross-Site Request Forgery (CSRF)</li>
-            <li>Utilisation de composants avec des vulnérabilités connues</li>
-            <li>Redirection et renvois non validés</li>
-          </ol>
+        
+        <section>
+          <section id="owasp">
+            <h2>OWASP</h2>
+            <p>
+              <a href="https://www.owasp.org/">Open Web Application Security Project</a> est une organisation à but non lucratif fournissant des recommandations, outils et articles de référence sur la sécurité des applications web.
+            </p>
+          </section>
+                  
+          <section id="owasp_t10">
+            <h2>Projet Top 10</h2>
+            <p>
+              Liste les 10 risques de sécurité web les plus critiques
+            </p>
+            <p>
+              Dernière version publiée en 2013 et toujours d'actualité
+            </p>
+          </section>  
         </section>
 
         <!-- Example of nested vertical slides -->
         <section>
           <section id="injection">
             <h2>1. Injection</h2>
-            <blockquote>
-              « Une faille d'injection, telle l'injection SQL, OS et LDAP, se produit quand une donnée non fiable est envoyée à un interpréteur en tant qu'élément d'une commande ou d'une requête. »
-            </blockquote>
             <div class="fragment roll-in">
               <img class="image" src="img/injection.png" /><br/>
-              <small>Source: http://xkcd.com/327/</small>
+              <small>Source: <a href="http://xkcd.com/327/">xkcd</a></small>
             </div>
           </section>
           
           <section>
             <h2>Injection SQL</h2>
             <p>Cas typique d'injection SQL :</p>
-              <pre>Code : <code class="php">$sql = "SELECT * FROM users
-    WHERE login = '".$_GET['login']."' AND password = '".$_GET['password']."'";
+              <pre>Code :<code class="php">$sql = "SELECT * FROM users
+                 WHERE login = '".$_GET['login']."'
+                 AND password = '".$_GET['password']."'";
 $user = mysqli_query($sql);</code></pre>
               <pre>Requête :<code class="http">GET /login.php?login=unicorn&password='+OR+'1'='1 HTTP/1.1</code></pre>
               <pre>Résultat :<code class="sql">SELECT * FROM users
-    WHERE login = 'unicorn' AND password = '' OR '1'='1'</code></pre>
+         WHERE login = 'unicorn'
+         AND password = '' OR '1'='1'</code></pre>
           </section>
                     
           <section>
