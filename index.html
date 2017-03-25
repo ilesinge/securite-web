@@ -85,7 +85,7 @@
           
           <section>
             <h2>Injection SQL</h2>
-            <p>Cas typique d'injection SQL :</p>
+            <p>Cas typique :</p>
               <pre>Code :<code class="php">$sql = "SELECT * FROM users
                  WHERE login = '".$_GET['login']."'
                  AND password = '".$_GET['password']."'";
@@ -103,50 +103,58 @@ $user = mysqli_query($sql);</code></pre>
                 Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, base de données, etc).
               </li>
               <li>
-                Ne jamais faire confiance aux données provenant d'une source tiers.
-              </li>
-              <li>
                 <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans une requête ou une commande. Exemples :
                 <ul>
                   <li><pre>MySQLi :<code class="php">$login = mysqli_real_escape_string($_GET['login']);</code></pre></li>
                   <li><pre>PDO :<code class="php">$login = $connection-&gt;quote($_GET['login']);</code></pre></li>
                 </ul>
               </li>
-              <li>
-                Utiliser des requêtes préparées ou des procédures stockées.
-              </li>
-              <li>Ne pas réinventer la roue : <pre><code class="php" style="text-decoration:line-through">$login = str_replace("'", "\\'", $_GET['login']);</code></pre></li>
+              
             </ol>
+          </section>
+          
+          <section>
+            <ol start="3">
+              <li>
+                Utiliser des requêtes préparées
+              </li>
+              <li>
+                Ne pas réinventer la roue :
+              </li>
+            </ol>
+            <pre><code class="php">// DON'T DO THIS
+$login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           </section>
                     
           <section>
             <h2>Attention !</h2>
             
-            <p>De telles injections sont théoriquement possibles à chaque moment où l'application interagit avec un système tiers</p>
+            <p>Des injections sont possibles à chaque moment où l'application utilise des données fournies par le client pour interagir avec un système tiers</p>
             
             <ul>
-              <li>Commandes systèmes de l'OS</li>
-              <li>Envoi de mails</li>
+              <li>Commandes de l'OS (exec(), system(), etc.)</li>
+              <li>Envoi de mails (injection d'entêtes)</li>
               <li>Appel à un webservice</li>
               <li>Etc.</li>
             </ul>
+            
+            <p>
+              Le nettoyage de l'input doit être approprié au contexte
+            </p>
           </section>
         </section>
 
         <section>
           <section id="identite">
             <h2>2. Violation de gestion d’authentification et de session</h2>
-            <blockquote>
-                « Les fonctions applicatives relatives à l'authentification et la gestion de session ne sont souvent pas mises en œuvre correctement, permettant aux attaquants de [...] s'approprier les identités d'autres utilisateurs. »
-            </blockquote>
             <p><img src="img/password.jpg" class="fragment roll-in"/></p>
           </section>
           <section>
-            <h2>Exemples de vulnérabilité</h2>
+            <h2>Exemples</h2>
             <ul>
-              <li>Les mots de passe sont stockés ou envoyés en clair (le chiffrement MD5 est insuffisant)</li>
-              <li>Timeout de session trop long (prendre en compte les utilisations sur des postes publics)</li>
-              <li>Exposition (ex: dans l'URL) ou vulnérabilité des IDs de session</li>
+              <li>Les mots de passe sont stockés ou envoyés en clair (le hachage MD5 est insuffisant, utiliser la fonction password_hash())</li>
+              <li>Les sessions durent trop longtemps ou éternellement (prendre en compte les utilisations sur des postes publics)</li>
+              <li>Exposition ou vulnérabilité des IDs de session (ex: paramètre PHPSESSID dans l'URL)</li>
             </ul>
           </section>
         </section>
@@ -154,22 +162,52 @@ $user = mysqli_query($sql);</code></pre>
         <section>
           <section id="xss">
             <h2>3. Cross-Site Scripting (XSS)</h2>
-            <blockquote>
-              « Les failles XSS se produisent chaque fois qu'une application accepte des données non fiables et les envoie à un navigateur web sans validation appropriée. XSS permet à des attaquants d'exécuter du script dans le navigateur de la victime afin de détourner des sessions utilisateur, défigurer des sites web, ou rediriger l'utilisateur vers des sites malveillants. »
-            </blockquote>
             <p><img src="img/xss.png" class="fragment roll-in"/></p>
           </section>
           
           <section>
             <h2>Exemple de faille XSS</h2>
-            <pre>Code :<code class="html"><form action="search.php">
-<input type="text" name="search" value="<?php echo $_GET['search']; ?>" />
+            <pre>Code :<code class="html"><form action="index.php">
+  <input type="text" name="q" value="<?php echo $_GET['q']; ?>" />
 </form></code></pre>
-            <pre>Requête :<code class="http">GET /index.php?search=&quot;/&gt;&lt;script&gt;alert('Vive+le+Québec+Libre+!');&lt;/script&gt; HTTP/1.1</code></pre>
+            <pre>Requête :<code class="http">GET /index.php?q=&quot;/&gt;&lt;script&gt;alert('Vive+le+Québec+Libre+!');&lt;/script&gt; HTTP/1.1</code></pre>
             <pre>Rendu :<code class="html"><form action="search.php">
-<input type="text" name="search" value="&quot;/&gt;&lt;script&gt;alert('Vive le Québec Libre !');&lt;/script&gt;" />
+  <input type="text" name="q" value="&quot;/&gt;&lt;script&gt;alert('Vive le Québec Libre !');&lt;/script&gt;" />
 </form></code></pre>
-            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
+
+            <div class="fragment" id="quebec"></div>
+          </section>
+          
+          <section>
+            <h2>Types</h2>
+            <ul>
+              <li>
+                Serveur / Client
+              </li>
+              <li>
+                Réfléchi / Stocké
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h2>Risques</h2>
+            <ul>
+              <li>
+                Vol de session
+              </li>
+              <li>
+                Defacement
+              </li>
+              <li>
+                Propagation de virus
+              </li>
+              <li>
+                ...
+              </li>
+              <li>
+                samy is my hero!
+              </li>
+            </ul>
           </section>
           
           <section>
@@ -179,17 +217,24 @@ $user = mysqli_query($sql);</code></pre>
                 Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, <u>base de données</u>, etc).
               </li>
               <li>
-                Ne jamais faire confiance aux données provenant d'une source tiers.
+                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans dans une page HTML.
+                <pre><code class="html"><input value="<?php echo htmlentities($_GET['q']); ?>"/></code></pre>
+                Utiliser les méthodes d'échappement fournies par le moteur de template utilisé.
+              </li>
+            </ol>
+          </section>
+          
+          <section>
+            <ol start="3">
+              <li>Ne pas réinventer la roue : <pre><code class="php">// DON'T DO THIS
+    $q = str_replace('"', '\\"', $_GET['q']);</code></pre></li>
+              <li>Toujours déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
+              <li>
+                Utiliser le flag HTTPOnly sur les cookies de session (évitant qu'ils soient récupérés en JavaScript)
               </li>
               <li>
-                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans dans une page HTML. Exemples :
-                <ul>
-                  <li><pre>PHP :<code class="html"><input value="<?php echo htmlentities($_GET['search']); ?>"/></code></pre></li>
-                  <li><pre>Smarty :<code class="html"><input value="{$search|escape}"/></code></pre></li>
-                </ul>
+                Envisager l'utilisation de Content Security Policy (CSP) permettant notamment de limiter l'origine d'exécution de scripts JS.
               </li>
-              <li>Ne pas réinventer la roue : <pre><code class="php" style="text-decoration:line-through">$search = str_replace('"', '\\"', $_GET['search']);</code></pre></li>
-              <li>Toujours déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
             </ol>
           </section>
           
@@ -203,35 +248,27 @@ $user = mysqli_query($sql);</code></pre>
               <li>Dans un URL : <code>url_encode()</code></li>
               <li>Dans un commentaire HTML</li>
             </ul>
-            <pre>Bâton de sourcier :<code class="html">';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//&quot;;
-alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83))//--
-&gt;&lt;/SCRIPT&gt;&quot;&gt;'&gt;&lt;SCRIPT&gt;alert(String.fromCharCode(88,83,83))&lt;/SCRIPT&gt;</code></pre>
-            <p>Des attaques complexes sont possibles. Pratiquez-vous avec un Cheat Sheet : <a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet">https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet</a></p>
           </section>
         </section>
 
         <section>
           <section id="references">
             <h2>4. Références directes non sécurisées à un objet</h2>
-            <blockquote>
-                « Une référence directe à un objet se produit quand un développeur expose une référence à un objet d'exécution interne, tel un fichier, un dossier, un enregistrement de base de données ou une clé de base de données. »
-            </blockquote>
             <p><img src="img/data.png" class="fragment roll-in"/></p>
           </section>
           
           <section>
             <h2>Exemple d'attaque</h2>
-            <pre>URL de téléchargement :<code class="url">http://www.example.net/download_invoice.php?id=665</code></pre>
+            <pre>URL de téléchargement :<code class="url">http://www.example.net/download_file.php?id=665</code></pre>
             
-            <p>Humm...</p>
-            <p><img src="img/access.png" class="fragment roll-in"/></p>
+            <p>Intuitivement, on incrémente !</p>
           </section>
           
           <section>
             <h2>Solutions</h2>
             <ol>
               <li>Implémenter des références indirecte aux objets auxquels l'utilisateur a réellement accès.
-                <pre>Télécharger ma 6e facture :<code class="url">http://www.example.net/download_invoice.php?n=6</code></pre>
+                <pre>Télécharger <u>mon</u> 6e fichier :<code class="url">http://www.example.net/download_file.php?n=6</code></pre>
               </li>
               <li>
                 Vérifier les droits à <strong>chaque</strong> tentative d'accès à une ressource protégée.
@@ -242,8 +279,7 @@ alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83)
 
         <section id="configuration">
           <h2>5. Mauvaise configuration sécurité</h2>
-          <blockquote>« Une bonne sécurité nécessite de disposer d'une configuration sécurisée définie et déployée pour l'application, contextes, serveur d'application, serveur web, serveur de base de données et la plate-forme. »</blockquote>
-          <p><img src="img/display_errors.png" class="fragment roll-in"/></p>
+          <p><img src="img/display_errors.jpg" class="fragment roll-in"/></p>
         </section>
                 
         <section>
@@ -361,6 +397,7 @@ alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83)
         history: true,
         previewLinks: true,
         mouseWheel: true,
+        width: "80%",
 
         // More info https://github.com/hakimel/reveal.js#dependencies
         dependencies: [
@@ -368,6 +405,12 @@ alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83)
           { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
           { src: 'node_modules/reveal.js-menu/menu.js' }
         ]
+      });
+      
+      Reveal.addEventListener( 'fragmentshown', function (event) {
+      	if (event.fragment.id == "quebec") {
+          alert('Vive le Québec Libre !');
+        }
       });
     </script>
   </body>
