@@ -2,7 +2,7 @@ http://suhosin.org/stories/index.html
 modSecurity
 clickjacking
 anectode XSS MySpace
-
+https://github.com/sbilly/awesome-security#web
 
 There are dozens of measures we can take in order to prevent and minimize security issues, both in the server and in the project’s code:
 

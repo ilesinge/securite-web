@@ -113,7 +113,7 @@ $user = mysqli_query($sql);</code></pre>
             </ol>
           </section>
           
-          <section>
+          <section data-menu-title="Comment se protéger (suite)">
             <ol start="3">
               <li>
                 Utiliser des requêtes préparées
@@ -152,9 +152,23 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           <section>
             <h2>Exemples</h2>
             <ul>
-              <li>Les mots de passe sont stockés ou envoyés en clair (le hachage MD5 est insuffisant, utiliser la fonction password_hash())</li>
+              <li>Les mots de passe sont stockés ou envoyés en clair ()</li>
               <li>Les sessions durent trop longtemps ou éternellement (prendre en compte les utilisations sur des postes publics)</li>
               <li>Exposition ou vulnérabilité des IDs de session (ex: paramètre PHPSESSID dans l'URL)</li>
+              <li>Identifiants ou cookies de sessions envoyés via HTTP</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Défenses possibles</h2>
+            <ul>
+              <li>
+                Le hachage MD5 est insuffisant pour les mots de passe, utiliser :
+                <pre><code class="php">$hashed = password_hash($password, PASSWORD_DEFAULT);</code></pre>
+              </li>
+              <li>
+                Activer le flag Secure sur les cookies de sessions :
+                <pre><code class="ini">session.cookie_secure = On</code></pre>
+              </li>
             </ul>
           </section>
         </section>
@@ -211,7 +225,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           </section>
           
           <section>
-            <h2>Comment s'en prémunir</h2>
+            <h2>Comment se protéger ?</h2>
             <ol>
               <li>
                 Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, <u>base de données</u>, etc).
@@ -224,13 +238,14 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
             </ol>
           </section>
           
-          <section>
+          <section data-menu-title="Comment se protéger (suite)">
             <ol start="3">
               <li>Ne pas réinventer la roue : <pre><code class="php">// DON'T DO THIS
     $q = str_replace('"', '\\"', $_GET['q']);</code></pre></li>
               <li>Toujours déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
               <li>
-                Utiliser le flag HTTPOnly sur les cookies de session (évitant qu'ils soient récupérés en JavaScript)
+                Utiliser le flag HTTPOnly sur les cookies de session :
+                <pre><code class="ini">session.cookie_httponly = On</code></pre>
               </li>
               <li>
                 Envisager l'utilisation de Content Security Policy (CSP) permettant notamment de limiter l'origine d'exécution de scripts JS.
@@ -285,22 +300,38 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         <section>
           <section id="exposition">
             <h2>6. Exposition de données sensibles</h2>
-            <blockquote>« Beaucoup d'applications web ne protègent pas correctement les données sensibles telles que les cartes de crédit, identifiants d'impôt et informations d'authentification. Les pirates peuvent voler ou modifier ces données faiblement protégées pour effectuer un vol d'identité, de la fraude à la carte de crédit ou autres crimes. »</blockquote>
-            <p><img src="img/sensitive.png" class="fragment roll-in"/></p>
+            <p><img src="img/sensitive.jpg" class="fragment roll-in"/></p>
+          </section>
+          
+          <section>
+            <h2>Exemples de failles</h2>
+            <ul>
+              <li>
+                Données stockées en clair
+              </li>
+              <li>
+                Données transmises via HTTP
+              </li>
+            </ul>
           </section>
           
           <section>
             <h2>Défenses possible</h2>
             <ol>
-              <li>Chiffrer les données sensibles (avec un algorithme approprié) lors du <strong>stockage</strong> et du <strong>transport</strong> (SSL) des données</li>
-              <li>Stocker le moins possible de données sensibles</li>
+              <li>
+                Chiffrer les données sensibles (avec un algorithme approprié) lors du <strong>stockage</strong> et du <strong>transport</strong> des données
+              </li>
+              <li>
+                Utiliser HTTPS (plus d'excuse avec Let's Encrypt) !<br/>
+              </li>
+              <li>
+                Forcer le protocole HTTPS avec HSTS : <pre><code class="php">header('Strict-Transport-Security: max-age=60000; includeSubDomains');</code></pre></li>
             </ol>
           </section>
         </section>
         
         <section id="controle">
           <h2>7. Manque de contrôle d’accès au niveau fonctionnel</h2>
-          <blockquote>« Pratiquement toutes les applications web vérifient les droits d'accès au niveau fonctionnel avant de rendre cette fonctionnalité visible dans l'interface utilisateur. Cependant, les applications doivent effectuer les mêmes vérifications de contrôle d'accès sur le serveur lors de l'accès à chaque fonction. »</blockquote>
           <p><img src="img/denied.png" class="fragment roll-in"/></p>
         </section>
         
