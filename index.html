@@ -30,9 +30,10 @@
         
         <section>
           <h1>Sécurité Web</h1>
-          <img src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" class="fragment roll-in" />
+          <img src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" style="margin:0;"/>
           <p>
-            <small>Par Alexandre Gravel-Raymond</small>
+            Par Alexandre Gravel-Raymond<br />
+            <small><em><a href="https://twitter.com/alexgrweb"><img src="img/twitter-24.png" style="border: 0; margin: 0; background: none;" /> @alexgrweb</a>, Développeur web depuis 1982</em></small>
           </p>
         </section>
         
@@ -73,14 +74,11 @@
           </section>  
         </section>
 
-        <!-- Example of nested vertical slides -->
         <section>
           <section id="injection">
             <h2>1. Injection</h2>
-            <div class="fragment roll-in">
-              <img class="image" src="img/injection.png" /><br/>
-              <small>Source: <a href="http://xkcd.com/327/">xkcd</a></small>
-            </div>
+            <img class="image" src="img/injection.png" /><br/>
+            <small>Source: <a href="http://xkcd.com/327/">xkcd</a></small>
           </section>
           
           <section>
@@ -135,6 +133,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
               <li>Commandes de l'OS (exec(), system(), etc.)</li>
               <li>Envoi de mails (injection d'entêtes)</li>
               <li>Appel à un webservice</li>
+              <li>Code PHP avec eval() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (╯°□°)╯︵ lɐʌǝ</li>
               <li>Etc.</li>
             </ul>
             
@@ -147,12 +146,12 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         <section>
           <section id="identite">
             <h2>2. Violation de gestion d’authentification et de session</h2>
-            <p><img src="img/password.jpg" class="fragment roll-in"/></p>
+            <p><img src="img/password.jpg"/></p>
           </section>
           <section>
             <h2>Exemples</h2>
             <ul>
-              <li>Les mots de passe sont stockés ou envoyés en clair ()</li>
+              <li>Les mots de passe sont stockés ou envoyés en clair</li>
               <li>Les sessions durent trop longtemps ou éternellement (prendre en compte les utilisations sur des postes publics)</li>
               <li>Exposition ou vulnérabilité des IDs de session (ex: paramètre PHPSESSID dans l'URL)</li>
               <li>Identifiants ou cookies de sessions envoyés via HTTP</li>
@@ -176,7 +175,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         <section>
           <section id="xss">
             <h2>3. Cross-Site Scripting (XSS)</h2>
-            <p><img src="img/xss.png" class="fragment roll-in"/></p>
+            <p><img src="img/xss.png"/></p>
           </section>
           
           <section>
@@ -219,7 +218,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
                 ...
               </li>
               <li>
-                samy is my hero!
+                Samy is my hero!
               </li>
             </ul>
           </section>
@@ -269,7 +268,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         <section>
           <section id="references">
             <h2>4. Références directes non sécurisées à un objet</h2>
-            <p><img src="img/data.png" class="fragment roll-in"/></p>
+            <p><img src="img/data.png"/></p>
           </section>
           
           <section>
@@ -292,15 +291,32 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           </section>
         </section>
 
-        <section id="configuration">
-          <h2>5. Mauvaise configuration sécurité</h2>
-          <p><img src="img/display_errors.jpg" class="fragment roll-in"/></p>
+        <section>
+          <section id="configuration">
+            <h2>5. Mauvaise configuration sécurité</h2>
+            <p><img src="img/display_errors.jpg"/></p>
+          </section>
+          <section>
+            <h2>Quelques pistes</h2>
+            <pre>php.ini<code class="ini">expose_php = Off
+display_errors = Off
+disable_functions = system, exec, shell_exec, passthru, popen, proc_open, eval
+disable_functions = phpinfo, show_source</code></pre>
+            <p>
+              ... et plein d'autres choses :<br />
+              <a href="https://www.owasp.org/index.php/PHP_Configuration_Cheat_Sheet">PHP Configuration Cheat Sheet</a>
+            </p>
+            <p>
+              Base de prod accessible publiquement sans mot de passe ?<br />
+              <span class="fragment"><big style="color: green; font-size: 2em; vertical-align: middle;">✓</big> <small style="vertical-align: middle;"><em>Merci MongoDB !</em></small></span>
+            </p>
+          </section>
         </section>
                 
         <section>
           <section id="exposition">
             <h2>6. Exposition de données sensibles</h2>
-            <p><img src="img/sensitive.jpg" class="fragment roll-in"/></p>
+            <p><img src="img/sensitive.jpg"/></p>
           </section>
           
           <section>
@@ -319,7 +335,7 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
             <h2>Défenses possible</h2>
             <ol>
               <li>
-                Chiffrer les données sensibles (avec un algorithme approprié) lors du <strong>stockage</strong> et du <strong>transport</strong> des données
+                Chiffrer les données sensibles lors du stockage et du transport des données
               </li>
               <li>
                 Utiliser HTTPS (plus d'excuse avec Let's Encrypt) !<br/>
@@ -332,53 +348,120 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         
         <section id="controle">
           <h2>7. Manque de contrôle d’accès au niveau fonctionnel</h2>
-          <p><img src="img/denied.png" class="fragment roll-in"/></p>
+          <p><img src="img/obscurity.jpg"/></p>
         </section>
         
         <section>
           <section id="csrf">
             <h2>8. Cross-Site Request Forgery (CSRF)</h2>
-            <blockquote>« Une attaque CSRF (Cross Site Request Forgery) force le navigateur d'une victime authentifiée à envoyer une requête HTTP forgée, comprenant le cookie de session de la victime ainsi que toute autre information automatiquement inclue, à une application web vulnérable.
-»</blockquote>
-            <p><img src="img/csrf.png" class="fragment roll-in"/></p>
+            <p><img src="img/csrf.png"/></p>
           </section>
             
           <section>
             <h2>Exemple d'attaque</h2>
             <pre>URL d'envoi d'email massif :<code class="url">http://www.example.net/admin/massive_send.php?title=Code+Promo&body=Bonjour+PRENOM,[...]</code></pre>
-            <pre>Dans une page non-liée, hébergée par le pirate :<code class="html"><img src="http://www.example.net/admin/massive_send.php?title=Buy+Viagra&body=MWAHAHA"/></code></pre>
+            <pre>Dans une page non-liée, hébergée par le pirate :<code class="html">&lt;img src="http://www.example.net/admin/massive_send.php?title=Buy+Viagra&body=MWAHAHA"/&gt;</code></pre>
             <p><strong>Effet</strong> : Un utilisateur, ayant des droits suffisants, accédant par inadvertance à cette page verra l'action malicieuse déclenchée en son nom sur le site web vulnérable.</p>
-            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
+          </section>
+          
+          <section id="clickjacking" data-state="nozoom">
+            <h2>Clickjacking</h2>
+            <p>
+              Exemple
+            </p>
+            <div style="position:relative; width:500px; margin: auto;">
+              <div style="position: absolute; left: 120px; top: 283px; font-size: 18px; text-align: left; color: green;">
+                <p style="position:relative;top:-20px;">Êtes-vous pour la paix dans le monde ?</p>
+                <u>Oui</u><br />
+                <u>Non</u>
+              </div>
+              <iframe src="http://afup.org/pages/administration/index.php?page=membre_ml" style="opacity: 0;" height="375" width="500" scrolling="no" ></iframe>
+            </div>
+          </section>
+          
+          <section data-menu-title="Clicjacking (suite)" data-frameid="clickjackframe-explain" data-state="nozoom" data-frameurl="http://afup.org/pages/administration/index.php?page=membre_ml">
+            <h2></h2>
+            <p>
+              Que s'est-t-il passé ?
+            </p>
+            <div style="position:relative; width:500px; margin: auto;">
+              <div style="position: absolute; left: 120px; top: 283px; font-size: 20px; text-align: left; color: green;">
+                <p style="position:relative;top:-20px;">Êtes-vous pour la paix dans le monde ?</p>
+                <u>Oui</u><br />
+                <u>Non</u>
+              </div>
+              <iframe id="clickjackframe-explain" height="375" width="500" scrolling="no" style="width: 500px !important; max-width: 500px;"></iframe>
+            </div>
+          </section>
+          
+          <section>
+            <h2>Explications</h2>
+            <pre>
+<code class="css">#container {
+  position: relative;
+  width: 500px;
+}
+#honey {
+  position: absolute;
+  left: 120px;
+  top: 260px;
+}
+#iframe {
+  opacity: 0;
+  height: 375px;
+  width: 500px;
+}</code>
+<code class="html"><div id="container">
+  <div id="honey">
+    <p>Êtes-vous pour la paix dans le monde ?</p>
+    <u>Oui</u><br />
+    <u>Non</u>
+  </div>
+  &lt;iframe scrolling="no" src="http://afup.org/..."&gt;&lt;/iframe&gt;
+</div></code></pre>
           </section>
           
           <section>
             <h2>Défenses possibles</h2>
             <ol>
-              <li>Utiliser un token d'utilisation unique dans un champ caché des formulaires (Anti-CSRF token)</li>
+              <li>Générer un token d'utilisation unique dans un champ caché des formulaires (Anti-CSRF token) et le vérifier côté serveur</li>
               <li>Demander à l'utilisateur de confirmer son action (saisir son mot de passe, CAPTCHA, etc.)</li>
+              <li>Pour les URLs destinées à être appelées en AJAX, vérifier la présence du header HTTP : <br /><code class="http">X-Requested-With: XMLHttpRequest</code></li>
+              <li>Empêcher le chargement du site dans une iframe : <pre><code class="php">header('X-Frame-Options: DENY');</code></pre></li>
             </ol>
-            <br/><br/>
-            <p><strong>Attention :</strong></p>
+          </section>
+          <section>
+            <h2>Attention !</h2>
             <ul>
               <li>Il est nécessaire, mais non suffisant, d'utiliser une méthode HTTP appropriée (POST et non GET) pour les actions sensibles</li>
-              <li>Cette attaque est fréquemment combinée à une attaque XSS du même site ou d'un site tiers</li>
+              <li>Cette attaque est fréquemment combinée à une attaque XSS sur le même site ou sur un site tiers</li>
               <li>La vérification de l'entête HTTP Referer n'est pas suffisante</li>
-              <li>Attention également au Click-Jacking ! (utiliser X-Frame-Options)</li>
             </ul>
           </section>
         </section>
         
         <section>
-          <h2>9. Utilisation de composants avec des vulnérabilités connues</h2>
-          <blockquote>« Les composants vulnérables, tels que bibliothèques, contextes et autres modules logiciels fonctionnent presque toujours avec des privilèges maximum. Ainsi, si exploités, ils peuvent causer des pertes de données sérieuses ou une prise de contrôle du serveur. »</blockquote>
-          <p><img src="img/sysadmin.png" class="fragment roll-in"/></p>
+          <section id="dependances">
+            <h2>9. Utilisation de composants avec des vulnérabilités connues</h2>
+            <p><img src="img/yuno.jpg"/></p>
+          </section>
+          <section>
+            <h2>Comment réduire le risque</h2>
+            <ul>
+              <li>
+                Faire de la veille sécurité... c'est difficile.
+              </li>
+              <li>
+                Vérifier régulièrement son fichier composer.lock avec le <a href="https://security.sensiolabs.org/check">Security Advisories Checker</a> de SensioLabs.
+              </li>
+            </ul>
+          </section>
         </section>
         
         <section>
           <section id="redirection">
             <h2>10. Redirections et renvois non validés</h2>
-            <blockquote>« Les applications web redirigent fréquemment les utilisateurs vers d'autres pages et sites internet, et utilisent des données non fiables pour déterminer les pages de destination. Sans validation appropriée, les attaquants peuvent réorienter les victimes vers des sites de phishing ou de malware. »</blockquote>
-            <p><img src="img/redirect.jpg" class="fragment roll-in"/></p>
+            <p><img src="img/redirect.jpg"/></p>
           </section>
           
           <section>
@@ -386,16 +469,65 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
             <pre>Code de redirection :<code class="php">header('Location: '.$_GET['url']);</code></pre>
             <pre>URL envoyé à un utilisateur innocent :<code class="url">http://www.example.com/redirect.php?url=http://www.example-phishing.com</code></pre>
             <p><strong>Effet</strong> : L'image de marque du site (son URL) est détournée afin de gagner la confiance de l'utilisateur.</p>
-            <p class="fragment"><span style="color:red;">P</span><span style="color:lightblue;">W</span><span style="color:yellow;">N</span><span style="color:green;">D</span><span style="color:pink;">!</span></p>
           </section>
           
           <section>
             <h2>Comment bloquer l'attaque</h2>
             <ol>
               <li>Ne pas inclure l'URL de redirection dans les paramètres GET ou POST</li>
-              <li>Préférer une valeur abstraite (<code>url=24</code>) qui ne pourra pas être détournée</li>
-              <li>Si c'est nécessaire de le faire, toujours vérifier la validité de l'URL avant de l'envoyer à l'utilisateur</li>
+              <li>Si c'est nécessaire de le faire, toujours vérifier la validité de l'URL avant de l'envoyer à l'utilisateur (ex: présence du nom de domaine dans une whitelist)</li>
             </ol>
+          </section>
+        </section>
+        
+        <section>
+          <section id="audit">
+            <h2>Faire un audit</h2>
+          </section>
+          <section>
+            <h2>Inspecter le code avec ses yeux</h2>
+            <p>
+              Porter une attention particulière à :
+            </p>
+            <ul>
+              <li>
+                Tous les fichiers, PHP ou non, accessibles directement
+              </li>
+              <li>
+                Tout système d'upload de fichier
+              </li>
+              <li>
+                Le système d'authentification / gestion de sessions
+              </li>
+              <li>
+                Les paramètres manipulables par l'utilisateur : GET, POST, Cookies, entêtes HTTP (Host, etc.)
+              </li>
+              <li>
+                @FIXME / @TODO
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h2>Scanner le code source ?</h2>
+            <p>
+              
+            </p>
+          </section>
+          <section>
+            <h2>Utiliser un scanner web</h2>
+            <ul>
+              <li>
+                <a href="https://portswigger.net/burp/">Burp Suite</a> (scan, proxy, etc.) - €€€
+              </li>
+              + http://www.arachni-scanner.com/ ?
+              + http://w3af.org/ ?
+              <li>
+                <a href="https://observatory.mozilla.org/">Observatory by Mozilla</a> (Analyse de configuration HTTP)
+              </li>
+              <li>
+                <a href="http://sqlmap.org/">sqlmap</a> (Tests d'injection SQL)
+              </li>
+            </ul>
           </section>
         </section>
 
@@ -409,13 +541,10 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           </ul>
         </section>
                 
-        <section>
-          <h1>THE END</h1>
-          <h3>Par Alexandre Gravel-Raymond</h3>
-          <p><img src="img/unicorn.jpg" class="fragment roll-in"/></p>
+        <section id="end">
+          <h1>Merci</h1>
+          <p><img src="img/unicorn.jpg"/></p>
         </section>
-        
-        <section>Slide 2</section>
       </div>
     </div>
 
@@ -433,15 +562,38 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         // More info https://github.com/hakimel/reveal.js#dependencies
         dependencies: [
           { src: 'plugin/notes/notes.js', async: true },
-          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          { src: 'node_modules/reveal.js-menu/menu.js' }
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
         ]
       });
       
-      Reveal.addEventListener( 'fragmentshown', function (event) {
+      Reveal.addEventListener('fragmentshown', function (event) {
       	if (event.fragment.id == "quebec") {
           alert('Vive le Québec Libre !');
         }
+      });
+      
+      function showSlideFrame(slide) {
+        var frameid = slide.getAttribute('data-frameid');
+        var frameurl = slide.getAttribute('data-frameurl');
+        if (frameid && frameurl) {
+          var frame = document.getElementById(frameid);
+          frame.src = frameurl;
+        }
+      }
+      function hideSlideFrame(slide) {
+        var frameid = slide.getAttribute('data-frameid');
+        if (frameid) {
+          var frame = document.getElementById(last_frameid);
+          frame.src = '';
+        }
+      }
+      
+      Reveal.addEventListener( 'slidechanged', function( event ) {
+        hideSlideFrame(event.previousSlide);
+        showSlideFrame(event.currentSlide);
+      });
+      Reveal.addEventListener( 'ready', function( event ) {
+      	showSlideFrame(event.currentSlide);
       });
     </script>
   </body>

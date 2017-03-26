@@ -1,28 +1,13 @@
 http://suhosin.org/stories/index.html
 modSecurity
-clickjacking
-anectode XSS MySpace
+
 https://github.com/sbilly/awesome-security#web
 
-There are dozens of measures we can take in order to prevent and minimize security issues, both in the server and in the project’s code:
-
-    Disable PHP modules that are not in use.
-    Restrict information leakage (don’t display PHP errors or extra information like PHP version)
-    Turn off remote execution (allow_url_fopen and allow_url_include should be Off)
-    Control the size of POST requests and uploaded files.
-    Control the maximum time and memory PHP can take to minimize DoS attacks.
-    Disable dangerous functions such as eval() or exec() if they are not going to be used.
-    Disable session IDs in URLs to prevent session fixation.
-    Include a token in your forms to avoid CSRF.
-    Properly escape the output to avoid XSS.
-    …
+AWAP : https://www.owasp.org/index.php/OWASP_WAP-Web_Application_Protection
+RIPS : https://www.ripstech.com/ + https://sourceforge.net/projects/rips-scanner/
 
 https://www.cyberciti.biz/tips/php-security-best-practices-tutorial.html
     
-Ne pas exposer la version de PHP
-
-Recommended article: “Linux: 25 PHP Security Best Practices For Sys Admins”
-
 http://sectools.org/ / http://sectools.org/tag/web-scanners/
 https://security.sensiolabs.org/
 https://github.com/sensiolabs/security-checker
