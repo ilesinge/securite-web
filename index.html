@@ -30,7 +30,7 @@
         
         <section>
           <h1>Sécurité Web</h1>
-          <img src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" style="margin:0;"/>
+          <img class="fragment roll-in" src="img/cool.png" alt="Génial ! Je vais devenir un hacker !" style="margin:0;"/>
           <p>
             Par Alexandre Gravel-Raymond<br />
             <small><em><a href="https://twitter.com/alexgrweb"><img src="img/twitter-24.png" style="border: 0; margin: 0; background: none;" /> @alexgrweb</a>, Développeur web depuis 1982</em></small>
@@ -114,8 +114,14 @@ $user = mysqli_query($sql);</code></pre>
           <section data-menu-title="Comment se protéger (suite)">
             <ol start="3">
               <li>
-                Utiliser des requêtes préparées
+                Utiliser des requêtes préparées :
               </li>
+            </ol>
+            <pre><code class="php">$stmt = $dbh-&gt;prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+$stmt-&gt;bindParam(1, $username);
+$stmt-&gt;bindParam(2, $password);
+$stmt-&gt;execute();</code></pre>
+            <ol start="4">
               <li>
                 Ne pas réinventer la roue :
               </li>
@@ -306,9 +312,9 @@ disable_functions = phpinfo, show_source</code></pre>
               ... et plein d'autres choses :<br />
               <a href="https://www.owasp.org/index.php/PHP_Configuration_Cheat_Sheet">PHP Configuration Cheat Sheet</a>
             </p>
-            <p>
+            <p class="fragment">
               Base de prod accessible publiquement sans mot de passe ?<br />
-              <span class="fragment"><big style="color: green; font-size: 2em; vertical-align: middle;">✓</big> <small style="vertical-align: middle;"><em>Merci MongoDB !</em></small></span>
+              <span><big style="color: green; font-size: 2em; vertical-align: middle;">✓</big> <small style="vertical-align: middle;"><em>Merci MongoDB !</em></small></span>
             </p>
           </section>
         </section>
@@ -359,8 +365,8 @@ disable_functions = phpinfo, show_source</code></pre>
             
           <section>
             <h2>Exemple d'attaque</h2>
-            <pre>URL d'envoi d'email massif :<code class="url">http://www.example.net/admin/massive_send.php?title=Code+Promo&body=Bonjour+PRENOM,[...]</code></pre>
-            <pre>Dans une page non-liée, hébergée par le pirate :<code class="html">&lt;img src="http://www.example.net/admin/massive_send.php?title=Buy+Viagra&body=MWAHAHA"/&gt;</code></pre>
+            <pre>URL d'envoi d'email massif :<code class="url">http://www.example.com/admin/massive_send.php?title=Code+Promo&body=Bonjour+PRENOM,[...]</code></pre>
+            <pre>Dans une page non-liée, hébergée par l'attaquant :<code class="html">&lt;img src="http://www.example.com/admin/massive_send.php?title=Buy+Viagra&body=MWAHAHA"/&gt;</code></pre>
             <p><strong>Effet</strong> : Un utilisateur, ayant des droits suffisants, accédant par inadvertance à cette page verra l'action malicieuse déclenchée en son nom sur le site web vulnérable.</p>
           </section>
           
@@ -481,6 +487,14 @@ disable_functions = phpinfo, show_source</code></pre>
         </section>
         
         <section>
+          <h2>Prévenir (certains) risques</h2>
+          <p>
+            Utiliser un firewall applicatif
+          </p>
+          <a href="https://modsecurity.org/about.html">modSecurity</a>
+        </section>
+        
+        <section>
           <section id="audit">
             <h2>Faire un audit</h2>
           </section>
@@ -494,9 +508,6 @@ disable_functions = phpinfo, show_source</code></pre>
                 Tous les fichiers, PHP ou non, accessibles directement
               </li>
               <li>
-                Tout système d'upload de fichier
-              </li>
-              <li>
                 Le système d'authentification / gestion de sessions
               </li>
               <li>
@@ -505,40 +516,91 @@ disable_functions = phpinfo, show_source</code></pre>
               <li>
                 @FIXME / @TODO
               </li>
+              <li>
+                La configuration du serveur et de PHP en production
+              </li>
+            </ul>
+          </section>
+          <section>
+            <ul>
+              <li>
+                Tout système d'upload de fichier :
+                <ul>
+                  <li>
+                    Le type de contenu est-il correctement vérifié ? (ne pas se baser sur l'extension)
+                  </li>
+                  <li>
+                    Le répertoire d'upload est-il accessible publiquement ?
+                  </li>
+                  <li>
+                    Est-il possible de contourner le répertoire d'upload ?
+                  </li>
+                </ul>
+              </li>
+              <li>
+                La lecture de fichier dont le chemin dépend d'un paramètre utilisateur
+              </li>
             </ul>
           </section>
           <section>
             <h2>Scanner le code source ?</h2>
             <p>
-              
+              Oui, mais...
+            </p>
+            <p>
+              <a href="https://www.ripstech.com/">RIPS</a> ?
             </p>
           </section>
           <section>
             <h2>Utiliser un scanner web</h2>
             <ul>
               <li>
-                <a href="https://portswigger.net/burp/">Burp Suite</a> (scan, proxy, etc.) - €€€
-              </li>
-              + http://www.arachni-scanner.com/ ?
-              + http://w3af.org/ ?
-              <li>
-                <a href="https://observatory.mozilla.org/">Observatory by Mozilla</a> (Analyse de configuration HTTP)
+                <a href="https://portswigger.net/burp/">Burp Suite</a> (scanner passif/actif, proxy, etc.) - Propriétaire, €€€
               </li>
               <li>
-                <a href="http://sqlmap.org/">sqlmap</a> (Tests d'injection SQL)
+                <a href="http://www.arachni-scanner.com/">Arachni</a> (scanner) - "Code source public", gratuit
+              </li>
+              <li>
+                <a href="http://w3af.org/">w3af</a> (scanner) - Logiciel libre
+              </li>
+              <li>
+                <a href="https://observatory.mozilla.org/analyze.html?host=franceconnect.gouv.fr">Observatory by Mozilla</a> (Analyse de configuration HTTP)
+              </li>
+              <li>
+                <a href="http://sqlmap.org/">sqlmap</a> (Tests d'injection SQL) - Logiciel libre
               </li>
             </ul>
           </section>
         </section>
 
-        <section id="bonus">
-          <h2>En bonus</h2>
+        <section id="entrainement">
+          <h2>S'entraîner</h2>
+          <p>
+            Application vulnérables
+          </p>
           <ul>
-            <li>Ne jamais se baser uniquement sur la <em>sécurité par l'obscurité</em></li>
-            <li>Faire auditer son code / son application par un pair</li>
-            <li>Garder à l'esprit que ce n'est pas toujours le code qui est en cause</li>
-            <li><strong>Hackez !</strong></li>
+            <li><a href="https://sourceforge.net/projects/bwapp/">bWAPP</a></li>
+            <li><a href="https://github.com/ethicalhack3r/DVWA/">Damn Vulnerable Web Application</a></li>
           </ul>
+          <p>
+            Défis
+          </p>
+          <ul>
+            <li>
+              <a href="http://google-gruyere.appspot.com/">Google Gruyère</a>
+            </li>
+            <li>
+              <a href="https://xss-game.appspot.com/">XSS Game</a>
+            </li>
+          </ul>
+        </section>
+        
+        <section id="bonus">
+          <h2>Et pour finir...</h2>
+          <p>
+            Attention à l'Internet des Objets...<br />
+            et au <a href="http://www.zdnet.com/article/this-is-the-dishwasher-with-an-unsecured-web-server-we-deserve/">Washergeddon</a> !
+          </p>
         </section>
                 
         <section id="end">
