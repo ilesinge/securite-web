@@ -50,7 +50,7 @@
               Intégrité des données
             </li>
             <li>
-              Image de l'organisation
+              Image de marque
             </li>
           </ul>
         </section>
@@ -76,7 +76,7 @@
 
         <section>
           <section id="injection">
-            <h2>1. Injection</h2>
+            <h2>Injection</h2>
             <img class="image" src="img/injection.png" /><br/>
             <small>Source: <a href="http://xkcd.com/327/">xkcd</a></small>
           </section>
@@ -96,36 +96,35 @@ $user = mysqli_query($sql);</code></pre>
                     
           <section>
             <h2>Comment se protéger ?</h2>
-            <ol>
+            <ul>
               <li>
                 Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, base de données, etc).
               </li>
               <li>
-                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans une requête ou une commande. Exemples :
+                Echapper les chaînes de caractères à insérer dans une requête ou une commande. Exemples :
                 <ul>
                   <li><pre>MySQLi :<code class="php">$login = mysqli_real_escape_string($_GET['login']);</code></pre></li>
                   <li><pre>PDO :<code class="php">$login = $connection-&gt;quote($_GET['login']);</code></pre></li>
                 </ul>
               </li>
-              
-            </ol>
+            </ul>
           </section>
           
           <section data-menu-title="Comment se protéger (suite)">
-            <ol start="3">
+            <ul>
               <li>
                 Utiliser des requêtes préparées :
               </li>
-            </ol>
-            <pre><code class="php">$stmt = $dbh-&gt;prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-$stmt-&gt;bindParam(1, $username);
-$stmt-&gt;bindParam(2, $password);
-$stmt-&gt;execute();</code></pre>
-            <ol start="4">
+            </ul>
+            <pre><code class="php">$statement = $db-&gt;prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+$statement-&gt;bindParam(1, $username);
+$statement-&gt;bindParam(2, $password);
+$statement-&gt;execute();</code></pre>
+            <ul>
               <li>
                 Ne pas réinventer la roue :
               </li>
-            </ol>
+            </ul>
             <pre><code class="php">// DON'T DO THIS
 $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           </section>
@@ -139,7 +138,6 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
               <li>Commandes de l'OS (exec(), system(), etc.)</li>
               <li>Envoi de mails (injection d'entêtes)</li>
               <li>Appel à un webservice</li>
-              <li>Code PHP avec eval() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (╯°□°)╯︵ lɐʌǝ</li>
               <li>Etc.</li>
             </ul>
             
@@ -151,14 +149,14 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
 
         <section>
           <section id="identite">
-            <h2>2. Violation de gestion d’authentification et de session</h2>
+            <h2>Violation de gestion d’authentification et de session</h2>
             <p><img src="img/password.jpg"/></p>
           </section>
           <section>
             <h2>Exemples</h2>
             <ul>
               <li>Les mots de passe sont stockés ou envoyés en clair</li>
-              <li>Les sessions durent trop longtemps ou éternellement (prendre en compte les utilisations sur des postes publics)</li>
+              <li>Les sessions durent trop longtemps ou éternellement</li>
               <li>Exposition ou vulnérabilité des IDs de session (ex: paramètre PHPSESSID dans l'URL)</li>
               <li>Identifiants ou cookies de sessions envoyés via HTTP</li>
             </ul>
@@ -167,20 +165,27 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
             <h2>Défenses possibles</h2>
             <ul>
               <li>
-                Le hachage MD5 est insuffisant pour les mots de passe, utiliser :
+                Attention à l'algorithme de hachage utilisé pour les mots de passe, utiliser bcrypt :
                 <pre><code class="php">$hashed = password_hash($password, PASSWORD_DEFAULT);</code></pre>
               </li>
               <li>
                 Activer le flag Secure sur les cookies de sessions :
-                <pre><code class="ini">session.cookie_secure = On</code></pre>
+                <pre>php.ini :
+<code class="ini">session.cookie_secure = On</code></pre>
               </li>
+			  <li>
+				Renouveler régulièrement l'ID de session
+			  </li>
+			  <li>
+				Attacher la session à l'adresse IP de l'utilisateur
+			  </li>
             </ul>
           </section>
         </section>
 
         <section>
           <section id="xss">
-            <h2>3. Cross-Site Scripting (XSS)</h2>
+            <h2>Cross-Site Scripting (XSS)</h2>
             <p><img src="img/xss.png"/></p>
           </section>
           
@@ -231,37 +236,37 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
           
           <section>
             <h2>Comment se protéger ?</h2>
-            <ol>
+            <ul>
               <li>
                 Ne jamais faire confiance aux données provenant d'une source tiers (paramètres GET/POST, cookies, <u>base de données</u>, etc).
               </li>
               <li>
-                <em><strong>Toujours</strong></em> échapper les chaînes de caractères à insérer dans dans une page HTML.
+                Echapper les chaînes de caractères à insérer dans dans une page HTML.
                 <pre><code class="html"><input value="<?php echo htmlentities($_GET['q']); ?>"/></code></pre>
                 Utiliser les méthodes d'échappement fournies par le moteur de template utilisé.
               </li>
-            </ol>
+            </ul>
           </section>
           
           <section data-menu-title="Comment se protéger (suite)">
-            <ol start="3">
+            <ul>
               <li>Ne pas réinventer la roue : <pre><code class="php">// DON'T DO THIS
-    $q = str_replace('"', '\\"', $_GET['q']);</code></pre></li>
-              <li>Toujours déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
+$q = str_replace('"', '\\"', $_GET['q']);</code></pre></li>
+              <li>Déclarer l'encodage de la page HTML pour éviter des contournement par modification de l'encodage (UTF-7)</li>
               <li>
                 Utiliser le flag HTTPOnly sur les cookies de session :
-                <pre><code class="ini">session.cookie_httponly = On</code></pre>
+                <pre>php.ini :<code class="ini">session.cookie_httponly = On</code></pre>
               </li>
               <li>
                 Envisager l'utilisation de Content Security Policy (CSP) permettant notamment de limiter l'origine d'exécution de scripts JS.
               </li>
-            </ol>
+            </ul>
           </section>
           
           <section>
             <h2>Attention !</h2>
             
-            <p>Il faut toujours prendre en compte le contexte dans lequel la chaîne sera affichée.</p>
+            <p>Prendre en compte le contexte dans lequel la chaîne sera affichée.</p>
             <ul>
               <li>Dans du code JavaScript / JSON : <code>json_encode()</code></li>
               <li>Dans du code CSS</li>
@@ -272,34 +277,8 @@ $login = str_replace("'", "\\'", $_GET['login']);</code></pre>
         </section>
 
         <section>
-          <section id="references">
-            <h2>4. Références directes non sécurisées à un objet</h2>
-            <p><img src="img/data.png"/></p>
-          </section>
-          
-          <section>
-            <h2>Exemple d'attaque</h2>
-            <pre>URL de téléchargement :<code class="url">http://www.example.net/download_file.php?id=665</code></pre>
-            
-            <p>Intuitivement, on incrémente !</p>
-          </section>
-          
-          <section>
-            <h2>Solutions</h2>
-            <ol>
-              <li>Implémenter des références indirecte aux objets auxquels l'utilisateur a réellement accès.
-                <pre>Télécharger <u>mon</u> 6e fichier :<code class="url">http://www.example.net/download_file.php?n=6</code></pre>
-              </li>
-              <li>
-                Vérifier les droits à <strong>chaque</strong> tentative d'accès à une ressource protégée.
-              </li>
-            </ol>
-          </section>
-        </section>
-
-        <section>
           <section id="configuration">
-            <h2>5. Mauvaise configuration sécurité</h2>
+            <h2>Mauvaise configuration sécurité</h2>
             <p><img src="img/display_errors.jpg"/></p>
           </section>
           <section>
@@ -312,16 +291,15 @@ disable_functions = phpinfo, show_source</code></pre>
               ... et plein d'autres choses :<br />
               <a href="https://www.owasp.org/index.php/PHP_Configuration_Cheat_Sheet">PHP Configuration Cheat Sheet</a>
             </p>
-            <p class="fragment">
-              Base de prod accessible publiquement sans mot de passe ?<br />
-              <span><big style="color: green; font-size: 2em; vertical-align: middle;">✓</big> <small style="vertical-align: middle;"><em>Merci MongoDB !</em></small></span>
-            </p>
+            <p>
+				Attention également à la configuration des autres composants (serveur web, base de données...)
+			</p>
           </section>
         </section>
                 
         <section>
           <section id="exposition">
-            <h2>6. Exposition de données sensibles</h2>
+            <h2>Exposition de données sensibles</h2>
             <p><img src="img/sensitive.jpg"/></p>
           </section>
           
@@ -339,7 +317,7 @@ disable_functions = phpinfo, show_source</code></pre>
           
           <section>
             <h2>Défenses possible</h2>
-            <ol>
+            <ul>
               <li>
                 Chiffrer les données sensibles lors du stockage et du transport des données
               </li>
@@ -348,18 +326,18 @@ disable_functions = phpinfo, show_source</code></pre>
               </li>
               <li>
                 Forcer le protocole HTTPS avec HSTS : <pre><code class="php">header('Strict-Transport-Security: max-age=60000; includeSubDomains');</code></pre></li>
-            </ol>
+            </ul>
           </section>
         </section>
         
         <section id="controle">
-          <h2>7. Manque de contrôle d’accès au niveau fonctionnel</h2>
+          <h2>Manque de contrôle d’accès au niveau fonctionnel</h2>
           <p><img src="img/obscurity.jpg"/></p>
         </section>
         
         <section>
           <section id="csrf">
-            <h2>8. Cross-Site Request Forgery (CSRF)</h2>
+            <h2>Cross-Site Request Forgery (CSRF)</h2>
             <p><img src="img/csrf.png"/></p>
           </section>
             
@@ -429,17 +407,17 @@ disable_functions = phpinfo, show_source</code></pre>
           
           <section>
             <h2>Défenses possibles</h2>
-            <ol>
-              <li>Générer un token d'utilisation unique dans un champ caché des formulaires (Anti-CSRF token) et le vérifier côté serveur</li>
+            <ul>
+              <li>Générer un token d'utilisation unique dans un champ caché des formulaires (token Anti-CSRF) et le vérifier côté serveur</li>
               <li>Demander à l'utilisateur de confirmer son action (saisir son mot de passe, CAPTCHA, etc.)</li>
-              <li>Pour les URLs destinées à être appelées en AJAX, vérifier la présence du header HTTP : <br /><code class="http">X-Requested-With: XMLHttpRequest</code></li>
+              <li>Pour les URLs destinées à être appelées en AJAX, vérifier la présence du header HTTP : <br /><pre><code class="http">X-Requested-With: XMLHttpRequest</code></pre></li>
               <li>Empêcher le chargement du site dans une iframe : <pre><code class="php">header('X-Frame-Options: DENY');</code></pre></li>
-            </ol>
+            </ul>
           </section>
           <section>
             <h2>Attention !</h2>
             <ul>
-              <li>Il est nécessaire, mais non suffisant, d'utiliser une méthode HTTP appropriée (POST et non GET) pour les actions sensibles</li>
+              <li>Il n'est pas suffisant d'utiliser une méthode HTTP appropriée (ex: POST) pour les actions sensibles</li>
               <li>Cette attaque est fréquemment combinée à une attaque XSS sur le même site ou sur un site tiers</li>
               <li>La vérification de l'entête HTTP Referer n'est pas suffisante</li>
             </ul>
@@ -448,7 +426,7 @@ disable_functions = phpinfo, show_source</code></pre>
         
         <section>
           <section id="dependances">
-            <h2>9. Utilisation de composants avec des vulnérabilités connues</h2>
+            <h2>Utilisation de composants avec des vulnérabilités connues</h2>
             <p><img src="img/yuno.jpg"/></p>
           </section>
           <section>
@@ -466,7 +444,7 @@ disable_functions = phpinfo, show_source</code></pre>
         
         <section>
           <section id="redirection">
-            <h2>10. Redirections et renvois non validés</h2>
+            <h2>Redirections et renvois non validés</h2>
             <p><img src="img/redirect.jpg"/></p>
           </section>
           
@@ -479,10 +457,10 @@ disable_functions = phpinfo, show_source</code></pre>
           
           <section>
             <h2>Comment bloquer l'attaque</h2>
-            <ol>
+            <ul>
               <li>Ne pas inclure l'URL de redirection dans les paramètres GET ou POST</li>
-              <li>Si c'est nécessaire de le faire, toujours vérifier la validité de l'URL avant de l'envoyer à l'utilisateur (ex: présence du nom de domaine dans une whitelist)</li>
-            </ol>
+              <li>Vérifier la validité de l'URL avant de l'envoyer à l'utilisateur (ex: présence du nom de domaine dans une whitelist)</li>
+            </ul>
           </section>
         </section>
         
@@ -527,7 +505,7 @@ disable_functions = phpinfo, show_source</code></pre>
                 Tout système d'upload de fichier :
                 <ul>
                   <li>
-                    Le type de contenu est-il correctement vérifié ? (ne pas se baser sur l'extension)
+                    Le type de contenu est-il correctement vérifié ?
                   </li>
                   <li>
                     Le répertoire d'upload est-il accessible publiquement ?
